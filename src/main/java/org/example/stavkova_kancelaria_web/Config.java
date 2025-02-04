@@ -10,6 +10,9 @@ import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.sqlite.SQLiteDataSource;
 
 import javax.sql.DataSource;
@@ -33,10 +36,24 @@ public class Config {
     public TicketDAO ticketDao() {
         return new TicketDAO(dslContext());
     }
+
     @Bean
     public DSLContext dslContext() {
         SQLiteDataSource dataSource = new SQLiteDataSource();
         dataSource.setUrl(dbJdbc);
         return DSL.using(dataSource, SQLDialect.SQLITE);
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:5173"); // Allow your frontend origin
+        config.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, etc.)
+        config.addAllowedHeader("*"); // Allow all headers
+        config.setAllowCredentials(true); // Allow cookies or credentials
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config); // Apply to all endpoints
+        return new CorsFilter(source);
     }
 }
