@@ -146,7 +146,7 @@
                 <configuration>
                     <jdbc>
                         <driver>org.sqlite.JDBC</driver>
-                        <url>jdbc:sqlite:/Users/samueldobrik/Library/Mobile Documents/com~apple~CloudDocs/upjs/pazc_projekty/Stavkova_kancelaria/stavkova.db</url>
+                        <url>jdbc:sqlite:../Stavkova_kancelaria/stavkova.db</url>
                     </jdbc>
                     <!--https://www.jooq.org/doc/latest/manual/getting-started/tutorials/jooq-in-7-steps/jooq-in-7-steps-step3/-->
                     <generator>

@@ -22,42 +22,6 @@ public class TicketDAO {
 
     //zdroj https://www.jooq.org/doc/latest/manual/getting-started/tutorials/jooq-in-7-steps/
 
-    public void createTicket(Ticket ticket) {
-        if (ticket.getUserId() == null || ticket.getOutcomeId() == null || ticket.getStake() == null) {
-            throw new IllegalArgumentException("Ticket musí obsahovať všetky atribúty.");
-        }
-
-        int userId = ticket.getUserId();
-        int outcomeId = ticket.getOutcomeId();
-        Double betAmount = ticket.getStake();
-
-        boolean userExists = dslContext.fetchExists(
-                DSL.selectOne()
-                        .from(USERS)
-                        .where(USERS.USER_ID.eq(userId))
-        );
-
-        boolean outcomeExists = dslContext.fetchExists(
-                DSL.selectOne()
-                        .from(POSSIBLE_OUTCOMES)
-                        .where(POSSIBLE_OUTCOMES.OUTCOME_ID.eq(outcomeId))
-        );
-
-        if (userExists && outcomeExists) {
-            dslContext.insertInto(TICKETS)
-                    .set(TICKETS.USER_ID, userId)
-                    .set(TICKETS.OUTCOME_ID, outcomeId)
-                    .set(TICKETS.STAKE, betAmount)
-                    .set(TICKETS.STATUS, StatusForTicket.pending.name())
-                    .execute();
-        } else {
-            if (!userExists) {
-                throw new IllegalArgumentException("User s týmto ID neexistuje.");
-            }
-            throw new IllegalArgumentException("Outcome s týmto ID neexistuje.");
-        }
-    }
-
     public List<Ticket> findAllTickets() {
         List<Ticket> tickets = new ArrayList<>();
         Result<TicketsRecord> result = dslContext.selectFrom(TICKETS).fetch();
@@ -113,23 +77,52 @@ public class TicketDAO {
     }
 
     public void deleteTicket(int ticketID) {
-        boolean ticketExists = dslContext.fetchExists(
-                DSL.selectOne().from(Tables.TICKETS)
-                        .where(Tables.TICKETS.TICKET_ID.eq(ticketID))
-        );
-
-        if (!ticketExists) {
-            throw new NotFoundException("Ticket nebol nájdený");
-        }
-
         dslContext.deleteFrom(TICKETS)
                 .where(TICKETS.TICKET_ID.eq(ticketID))
                 .execute();
     }
 
+    public void insertTicket(Ticket ticket) {
+        if (ticket == null) {
+            throw new NotFoundException("Neplatný tiket");
+        }
 
+        int userID = ticket.getUserId();
+        int outcomeID = ticket.getOutcomeId();
+        Double betAmount = ticket.getStake();
 
+        if (betAmount == null) {
+            throw new IllegalArgumentException("Neplatná suma");
+        }
 
+        boolean userExists = dslContext.fetchExists(
+                DSL.selectOne()
+                        .from(USERS)
+                        .where(USERS.USER_ID.eq(userID))
+        );
+
+        boolean outcomeExists = dslContext.fetchExists(
+                DSL.selectOne()
+                        .from(POSSIBLE_OUTCOMES)
+                        .where(POSSIBLE_OUTCOMES.OUTCOME_ID.eq(outcomeID))
+        );
+
+        if (userExists && outcomeExists) {
+            dslContext.insertInto(TICKETS)
+                    .set(TICKETS.USER_ID, userID)
+                    .set(TICKETS.OUTCOME_ID, outcomeID)
+                    .set(TICKETS.STAKE, betAmount)
+                    .set(TICKETS.STATUS, StatusForTicket.pending.name())
+                    .execute();
+        } else {
+            if (!userExists) {
+                throw new IllegalArgumentException("User s týmto ID neexistuje.");
+            }
+            throw new IllegalArgumentException("Outcome s týmto ID neexistuje.");
+        }
+    }
+
+    // other
 
     public void updateTicketStatusToWon(int ticketID) {
         dslContext.update(TICKETS)

@@ -17,7 +17,7 @@ public class TicketController {
 
     @PostMapping("/tickets")
     public void createTicket(@RequestBody Ticket ticket) {
-        ticketDAO.createTicket(ticket);
+        ticketDAO.insertTicket(ticket);
     }
 
     @GetMapping("/tickets")

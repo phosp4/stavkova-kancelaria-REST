@@ -28,7 +28,7 @@ public class SportEventDAO {
                 .select(SPORT_EVENTS.EVENT_ID, SPORT_EVENTS.EVENT_NAME, SPORT_EVENTS.START_TIME, SPORT_EVENTS.SPORT_TYPE, SPORT_EVENTS.STATUS)
                 .from(SPORT_EVENTS)
                 .where(SPORT_EVENTS.VISIBILITY.eq("visible"))
-                .orderBy(SPORT_EVENTS.START_TIME.asc())
+                .orderBy(SPORT_EVENTS.START_TIME.desc())
                 .fetch();
 
         for (Record record : result) {
@@ -135,5 +135,28 @@ public class SportEventDAO {
         event.setStatus(StatusForEvent.valueOf(record.getValue(SPORT_EVENTS.STATUS)));
 
         return event;
+    }
+
+    public void updateSportEvent(SportEvent event) {
+        boolean eventExists = dslContext.fetchExists(
+                DSL.selectOne().from(Tables.SPORT_EVENTS)
+                        .where(Tables.SPORT_EVENTS.EVENT_ID.eq(event.getEventId()))
+        );
+
+        if (!eventExists) {
+            throw new NotFoundException("Event nebol nájdený");
+        }
+
+        if (event.getEventName() == null || event.getEventName().isEmpty() || event.getStartTime() == null || event.getSportType() == null || event.getSportType().isEmpty()) {
+            throw new IllegalArgumentException("Event musí obsahovať všetky atribúty.");
+        }
+
+        dslContext.update(SPORT_EVENTS)
+                .set(SPORT_EVENTS.EVENT_NAME, event.getEventName())
+                .set(SPORT_EVENTS.START_TIME, event.getStartTime())
+                .set(SPORT_EVENTS.SPORT_TYPE, event.getSportType())
+                .set(SPORT_EVENTS.STATUS, event.getStatus().name())
+                .where(SPORT_EVENTS.EVENT_ID.eq(event.getEventId()))
+                .execute();
     }
 }

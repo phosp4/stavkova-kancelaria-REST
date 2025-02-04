@@ -1,8 +1,9 @@
 package org.example.stavkova_kancelaria_web.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,11 +19,27 @@ public class UserController {
 
     @GetMapping("/users")
     public List<User> getAllUsers() {
-        User user1 = new User();
-        user1.setEmail("samuel@gmail.com");
-        user1.setBalance(45.5);
+        return userDAO.getAllUsers();
+    }
 
-        return List.of(user1);
-//        return userDAO.get
+    @GetMapping("/users/{id}")
+    public User findUserById(@PathVariable int id) {
+        return userDAO.findUserById(id);
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        userDAO.insertUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/users")
+    public void updateUser(@RequestBody User user) {
+        userDAO.updateUser(user);
+    }
+
+    @DeleteMapping("/users/{id}")
+    public void deleteUser(@PathVariable int id) {
+        userDAO.deleteUser(id);
     }
 }
