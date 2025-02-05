@@ -8,3 +8,17 @@ This project provides REST API for Stavkova Kancelaria project. The original pro
 - Spring Boot
 - Maven
 - jOOQ
+
+## REST API
+
+The project uses a REST API to manage sport events, users, and tickets. The API endpoints are as follows:
+
+- `GET /sportevents`: Retrieve a list of sport events.
+- `GET /sportevents/:eventId`: Retrieve details of a specific sport event.
+- `PUT /sportevents`: Update a sport event.
+- `GET /users`: Retrieve a list of users.
+- `GET /users/:userId`: Retrieve details of a specific user.
+- `PUT /users`: Update a user.
+- `GET /tickets`: Retrieve a list of tickets.
+- `GET /tickets/:ticketId`: Retrieve details of a specific ticket.
+- `PUT /tickets`: Update a ticket.
