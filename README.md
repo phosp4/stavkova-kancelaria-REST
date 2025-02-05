@@ -8,3 +8,5 @@ This project provides REST API for Stavkova Kancelaria project. The original pro
 - Spring Boot
 - Maven
 - jOOQ
+
+<img width="1465" alt="image" src="https://github.com/user-attachments/assets/c74e3828-97f5-4890-8661-35909919e2cd" />
